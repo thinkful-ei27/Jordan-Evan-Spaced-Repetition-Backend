@@ -1,5 +1,5 @@
 'use strict'
-
+const mongoose = require('mongoose')
 mongoose.Promise = global.Promise;
 
 const WordListSchema = mongoose.Schema({
@@ -17,7 +17,7 @@ const WordListSchema = mongoose.Schema({
   }
 });
 
-const WordList = mongoose.model('User', UserSchema);
+const WordList = mongoose.model('Word', WordListSchema);
 
 
 module.exports = { WordList };

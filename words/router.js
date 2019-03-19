@@ -11,18 +11,19 @@ const jsonParser = bodyParser.json();
 
 router.use('/', passport.authenticate('jwt', { session: false }));
 
-router.post('/words', jsonParser, (req, res) => {
+router.post('/', jsonParser, (req, res) => {
   const { userId } = req.user
+  console.log(req)
   return WordList.create({
-    list: dummyList,
+    list: req.body,
     userId: userId
-  });
+  })
+    .then(res => {
+      console.log(res)
+      return res.status(201).json(res);
+    })
+    .catch(err => console.log(err))
 })
-  .catch(err => {
-    // Forward validation errors on to the client, otherwise give a 500
-    // error because something unexpected has happened
-    if (err.reason === 'ValidationError') {
-      return res.status(err.code).json(err);
-    }
-    res.status(500).json({ code: 500, message: 'Internal server error' });
-  });
+
+
+module.exports = router
