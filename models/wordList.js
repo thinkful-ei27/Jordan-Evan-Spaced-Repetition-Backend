@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const wordList = new mongoose.Schema({
   words: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Word' }],
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 });
 
 wordList.set('toJSON', {

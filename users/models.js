@@ -1,7 +1,6 @@
 'use strict';
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
-
 mongoose.Promise = global.Promise;
 
 const UserSchema = mongoose.Schema({
@@ -15,7 +14,8 @@ const UserSchema = mongoose.Schema({
     required: true
   },
   firstName: { type: String, default: '' },
-  lastName: { type: String, default: '' }
+  lastName: { type: String, default: '' },
+  wordList: { type: mongoose.Schema.Types.ObjectId, ref: 'WordList' }
 });
 
 UserSchema.methods.serialize = function () {
@@ -23,7 +23,8 @@ UserSchema.methods.serialize = function () {
     userId: this._id,
     username: this.username || '',
     firstName: this.firstName || '',
-    lastName: this.lastName || ''
+    lastName: this.lastName || '',
+    wordList: this.wordList || ""
   };
 };
 

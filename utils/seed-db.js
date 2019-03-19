@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+require('dotenv').config();
 const { DATABASE_URL } = require('../config');
 const WordList = require('../models/wordList');
 const Word = require('../models/word');
