@@ -23,8 +23,10 @@
     "passport-local": "^1.0.0"
   },
   "devDependencies": {
+    "babel-eslint": "^8.2.6",
     "chai": "^4.2.0",
     "chai-http": "^4.2.1",
+    "eslint": "^4.19.1",
     "faker": "^4.1.0",
     "mocha": "^6.0.2"
   },
