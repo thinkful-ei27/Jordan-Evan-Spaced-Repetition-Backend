@@ -3,21 +3,32 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const router = express.Router();
-const User = require('../users/models')
+const User = require('../users/models');
 const jsonParser = bodyParser.json();
 
 router.use('/', passport.authenticate('jwt', { session: false }));
 
+router.get('/', (req, res, next) => {
+  const { userId } = req.user;
+  User.findById(userId).then(result => {
+    console.log(result);
+    const words = result.wordList.map(word => {
+      return { word: word, head: result.head };
+    });
+    res.json({ word: result.wordList[result.head].word });
+  });
+});
+
 router.post('/guess/', jsonParser, (req, res, next) => {
   const { userId } = req.user;
-  console.log(userId)
+  console.log(userId);
   const { guess, word } = req.body;
   User.findById(userId)
     .then(result => {
-      console.log(result)
-      res.json(result)
-      const words = result.wordList
-      const head = result.head
+      console.log(result);
+      res.json(result);
+      const words = result.wordList;
+      const head = result.head;
       // for (let i = 0; i < words.length; i++) {
       //   if (words[i].word === word) {
       //     if (words[i].answer === guess) {
@@ -42,7 +53,7 @@ router.post('/guess/', jsonParser, (req, res, next) => {
     })
     .catch(err => {
       next(err);
-    })
+    });
 });
 
-module.exports = router
+module.exports = router;
