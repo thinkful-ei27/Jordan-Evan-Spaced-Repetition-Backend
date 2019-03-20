@@ -16,45 +16,35 @@ router.post('/guess', jsonParser, (req, res, next) => {
       let head = user.head;
       let currentWord = user.wordList[head]
       let nextIndex = currentWord.next
-      let nextWord = user.wordList[nextIndex]
+      let m;
       if (user.wordList[head].answer === guess) {
-        user.wordList.set(head, {
-          memoryStrength: currentWord.memoryStrength * 2,
-          correctCount: ++currentWord.correctCount,
-          incorrectCount: currentWord.incorrectCount,
-          word: currentWord.word,
-          answer: currentWord.answer,
-          next: currentWord.next + (currentWord.memoryStrength * 2)
-        }),
-          user.wordList.set((currentWord.memoryStrength * 2), {
-            memoryStrength: nextWord.memoryStrength,
-            correctCount: nextWord.correctCount,
-            incorrectCount: nextWord.incorrectCount,
-            word: nextWord.word,
-            answer: nextWord.answer,
-            next: head
+        currentWord.memoryStrength = m = currentWord.memoryStrength * 2;
+        currentWord.correctCount = currentWord.correctCount + 1;
+        let swapWord = user.wordList[head + m];
+        currentWord.next = (swapWord.next);
+        swapWord.next = head;
+        user.wordList.set(head + m, swapWord);
+        user.wordList.set(head, currentWord);
+        user.head = nextIndex;
+        user.save()
+          .then(update => {
+            console.log(update)
+            return res.json('correct')
           })
-        user.head = nextIndex,
-          user.save()
-            .then(update => {
-              console.log(update)
-              return res.json('correct')
-            })
       } else {
-        user.wordList.set(head, {
-          memoryStrength: Math.ceil(currentWord.memoryStrength / 2),
-          correctCount: currentWord.correctCount,
-          incorrectCount: ++currentWord.incorrectCount,
-          word: currentWord.word,
-          answer: currentWord.answer,
-          next: currentWord.next
-        }),
-          user.head = nextIndex,
-          user.save()
-            .then(update => {
-              console.log(update)
-              return res.json('incorrect')
-            })
+        currentWord.memoryStrength = m = 1
+        currentWord.incorrectCount = currentWord.incorrectCount + 1
+        let swapWord = user.wordList[nextIndex];
+        currentWord.next = (swapWord.next);
+        swapWord.next = head;
+        user.wordList.set(nextIndex, swapWord);
+        user.wordList.set(head, currentWord);
+        user.head = nextIndex;
+        user.save()
+          .then(update => {
+            console.log(update)
+            return res.json('incorrect')
+          })
       }
     })
     .catch(err => {
@@ -63,3 +53,27 @@ router.post('/guess', jsonParser, (req, res, next) => {
 });
 
 module.exports = router
+
+
+// user.wordList.set(head, {
+//   memoryStrength: currentWord.memoryStrength * 2,
+//   correctCount: ++currentWord.correctCount,
+//   incorrectCount: currentWord.incorrectCount,
+//   word: currentWord.word,
+//   answer: currentWord.answer,
+//   next: currentWord.next + (currentWord.memoryStrength * 2)
+// }),
+//   user.wordList.set((currentWord.memoryStrength * 2), {
+//     memoryStrength: nextWord.memoryStrength,
+//     correctCount: nextWord.correctCount,
+//     incorrectCount: nextWord.incorrectCount,
+//     word: nextWord.word,
+//     answer: nextWord.answer,
+//     next: head
+//   })
+// user.head = nextIndex,
+//   user.save()
+//     .then(update => {
+//       console.log(update)
+//       return res.json('correct')
+//     })
