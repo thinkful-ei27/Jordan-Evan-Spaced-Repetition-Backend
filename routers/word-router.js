@@ -53,27 +53,3 @@ router.post('/guess', jsonParser, (req, res, next) => {
 });
 
 module.exports = router
-
-
-// user.wordList.set(head, {
-//   memoryStrength: currentWord.memoryStrength * 2,
-//   correctCount: ++currentWord.correctCount,
-//   incorrectCount: currentWord.incorrectCount,
-//   word: currentWord.word,
-//   answer: currentWord.answer,
-//   next: currentWord.next + (currentWord.memoryStrength * 2)
-// }),
-//   user.wordList.set((currentWord.memoryStrength * 2), {
-//     memoryStrength: nextWord.memoryStrength,
-//     correctCount: nextWord.correctCount,
-//     incorrectCount: nextWord.incorrectCount,
-//     word: nextWord.word,
-//     answer: nextWord.answer,
-//     next: head
-//   })
-// user.head = nextIndex,
-//   user.save()
-//     .then(update => {
-//       console.log(update)
-//       return res.json('correct')
-//     })
