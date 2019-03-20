@@ -15,7 +15,21 @@ const UserSchema = mongoose.Schema({
   },
   firstName: { type: String, default: '' },
   lastName: { type: String, default: '' },
-  wordList: { type: mongoose.Schema.Types.ObjectId, ref: 'WordList' }
+  wordList: [
+    {
+      _id: mongoose.Schema.Types.ObjectId,
+      word: String,
+      answer: String,
+      memoryStrength: { type: Number, default: 1 },
+      next: Number,
+      correctCount: { type: Number, default: 0 },
+      incorrectCount: { type: Number, default: 0 }
+    }
+  ],
+  head: {
+    type: Number,
+    default: 0
+  }
 });
 
 UserSchema.methods.serialize = function () {
@@ -24,7 +38,7 @@ UserSchema.methods.serialize = function () {
     username: this.username || '',
     firstName: this.firstName || '',
     lastName: this.lastName || '',
-    wordList: this.wordList || ""
+    wordList: this.wordList
   };
 };
 
@@ -38,4 +52,4 @@ UserSchema.statics.hashPassword = function (password) {
 
 const User = mongoose.model('User', UserSchema);
 
-module.exports = { User };
+module.exports = User;

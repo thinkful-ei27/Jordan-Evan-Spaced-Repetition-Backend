@@ -3,7 +3,7 @@ require('dotenv').config();
 const { DATABASE_URL } = require('../config');
 const WordList = require('../models/wordList');
 const Word = require('../models/word');
-const { User } = require('../users/models');
+const User = require('../users/models');
 
 const { wordList, words, users } = require('./dummyData');
 
