@@ -32,15 +32,23 @@ const UserSchema = mongoose.Schema({
   }
 });
 
+
 UserSchema.methods.serialize = function () {
   return {
     userId: this._id,
     username: this.username || '',
     firstName: this.firstName || '',
     lastName: this.lastName || '',
-    wordList: this.wordList
+    wordList: this.wordList || '',
   };
 };
+
+UserSchema.set('toJSON', {
+  transform: (doc, result) => {
+    delete result.__v;
+    delete result._id;
+  }
+});
 
 UserSchema.methods.validatePassword = function (password) {
   return bcrypt.compare(password, this.password);

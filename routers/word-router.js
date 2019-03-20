@@ -19,37 +19,52 @@ router.get('/', (req, res, next) => {
   });
 });
 
-router.post('/guess/', jsonParser, (req, res, next) => {
+router.post('/guess', jsonParser, (req, res, next) => {
   const { userId } = req.user;
-  console.log(userId);
-  const { guess, word } = req.body;
+  const { guess } = req.body;
   User.findById(userId)
-    .then(result => {
-      console.log(result);
-      res.json(result);
-      const words = result.wordList;
-      const head = result.head;
-      // for (let i = 0; i < words.length; i++) {
-      //   if (words[i].word === word) {
-      //     if (words[i].answer === guess) {
-      //       console.log('correct')
-      //       Word.findOneAndUpdate({ word }, { $inc: { correctCount: 1 } })
-      //         .then(result => {
-      //           console.log(result)
-      //           res.json('correct')
-      //         })
-      //       return;
-      //     } else {
-      //       console.log('incorrect')
-      //       Word.findOneAndUpdate({ word }, { $inc: { incorrectCount: 1 } })
-      //         .then(result => {
-      //           console.log(result)
-      //           res.json(`incorrect, the answer is ${words[i].answer}`)
-      //         })
-      //       return;
-      //     }
-      //   }
-      // }
+    .then(user => {
+      let head = user.head;
+      let currentWord = user.wordList[head];
+      let nextIndex = currentWord.next;
+      let nextWord = user.wordList[nextIndex];
+      if (user.wordList[head].answer === guess) {
+        user.wordList.set(head, {
+          memoryStrength: currentWord.memoryStrength * 2,
+          correctCount: ++currentWord.correctCount,
+          incorrectCount: currentWord.incorrectCount,
+          word: currentWord.word,
+          answer: currentWord.answer,
+          next: currentWord.next + currentWord.memoryStrength * 2
+        }),
+          user.wordList.set(currentWord.memoryStrength * 2, {
+            memoryStrength: nextWord.memoryStrength,
+            correctCount: nextWord.correctCount,
+            incorrectCount: nextWord.incorrectCount,
+            word: nextWord.word,
+            answer: nextWord.answer,
+            next: head
+          });
+        (user.head = nextIndex),
+          user.save().then(update => {
+            console.log(update);
+            return res.json('correct');
+          });
+      } else {
+        user.wordList.set(head, {
+          memoryStrength: Math.ceil(currentWord.memoryStrength / 2),
+          correctCount: currentWord.correctCount,
+          incorrectCount: ++currentWord.incorrectCount,
+          word: currentWord.word,
+          answer: currentWord.answer,
+          next: currentWord.next
+        }),
+          (user.head = nextIndex),
+          user.save().then(update => {
+            console.log(update);
+            return res.json('incorrect');
+          });
+      }
     })
     .catch(err => {
       next(err);
