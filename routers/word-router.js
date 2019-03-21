@@ -39,7 +39,7 @@ router.post('/guess', jsonParser, (req, res, next) => {
         user.head = nextIndex;
         user.save().then(update => {
           console.log(update);
-          return res.json('correct');
+          return res.json({ rightOrWrong: 'correct' });
         });
       } else {
         currentWord.memoryStrength = m = 1;
@@ -52,7 +52,10 @@ router.post('/guess', jsonParser, (req, res, next) => {
         user.head = nextIndex;
         user.save().then(update => {
           console.log(update);
-          return res.json('incorrect');
+          return res.json({
+            rightOrWrong: 'incorrect',
+            answer: currentWord.answer
+          });
         });
       }
     })
