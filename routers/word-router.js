@@ -28,13 +28,20 @@ router.post('/guess', jsonParser, (req, res, next) => {
       let currentWord = user.wordList[head];
       let nextIndex = currentWord.next;
       let m;
-      if (user.wordList[head].answer === guess) {
+      let wordList = user.wordList;
+
+      if (wordList[head].answer === guess) {
         currentWord.memoryStrength = m = currentWord.memoryStrength * 2;
         currentWord.correctCount = currentWord.correctCount + 1;
-        let swapWord = user.wordList[head + m];
+        let position = head + m;
+        if (position > wordList.length - 1) {
+          position = wordList.length - 1;
+          console.log('POSITION', position);
+        }
+        let swapWord = wordList[position];
         currentWord.next = swapWord.next;
         swapWord.next = head;
-        user.wordList.set(head + m, swapWord);
+        user.wordList.set(position, swapWord);
         user.wordList.set(head, currentWord);
         user.head = nextIndex;
         user.save().then(update => {
@@ -44,7 +51,7 @@ router.post('/guess', jsonParser, (req, res, next) => {
       } else {
         currentWord.memoryStrength = m = 1;
         currentWord.incorrectCount = currentWord.incorrectCount + 1;
-        let swapWord = user.wordList[nextIndex];
+        let swapWord = wordList[nextIndex];
         currentWord.next = swapWord.next;
         swapWord.next = head;
         user.wordList.set(nextIndex, swapWord);
