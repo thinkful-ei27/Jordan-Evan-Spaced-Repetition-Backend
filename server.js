@@ -26,7 +26,7 @@ const app = express();
 app.use(morgan('common'));
 
 // CORS
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
@@ -44,13 +44,6 @@ app.use('/api/auth/', authRouter);
 app.use('/api/words/', wordsRouter);
 
 const jwtAuth = passport.authenticate('jwt', { session: false });
-
-// A protected endpoint which needs a valid JWT to access it
-app.get('/api/protected', jwtAuth, (req, res) => {
-  return res.json({
-    data: 'rosebud'
-  });
-});
 
 app.use('*', (req, res) => {
   return res.status(404).json({ message: 'Not Found' });
