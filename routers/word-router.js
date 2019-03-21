@@ -45,48 +45,39 @@ router.post('/guess', jsonParser, (req, res, next) => {
       let head = user.head;
       let currentWord = user.wordList[head];
       let nextIndex = currentWord.next;
-      let m;
       let wordList = user.wordList;
-
+      let m, position, feedback;
       if (wordList[head].answer === guess) {
         currentWord.memoryStrength = m = currentWord.memoryStrength * 2;
         currentWord.correctCount = currentWord.correctCount + 1;
-        let position = head + m;
+        position = head + m;
+        feedback = { rightOrWrong: 'correct' }
         if (position > wordList.length - 1) {
           position = wordList.length - 1;
-          console.log('POSITION', position);
         }
-        let swapWord = wordList[position];
-        currentWord.next = swapWord.next;
-        swapWord.next = head;
-        user.wordList.set(position, swapWord);
-        user.wordList.set(head, currentWord);
-        user.head = nextIndex;
-        user.save().then(update => {
-          console.log(update);
-          return res.json({ rightOrWrong: 'correct' });
-        });
       } else {
         currentWord.memoryStrength = m = 1;
         currentWord.incorrectCount = currentWord.incorrectCount + 1;
-        let swapWord = wordList[nextIndex];
-        currentWord.next = swapWord.next;
-        swapWord.next = head;
-        user.wordList.set(nextIndex, swapWord);
-        user.wordList.set(head, currentWord);
-        user.head = nextIndex;
-        user.save().then(update => {
-          console.log(update);
-          return res.json({
-            rightOrWrong: 'incorrect',
-            answer: currentWord.answer
-          });
-        });
+        position = nextIndex
+        feedback = {
+          rightOrWrong: 'incorrect',
+          answer: currentWord.answer
+        }
       }
+      let swapWord = wordList[position];
+      currentWord.next = swapWord.next;
+      swapWord.next = head;
+      user.wordList.set(position, swapWord);
+      user.wordList.set(head, currentWord);
+      user.head = nextIndex;
+      user.save()
+        .then(() => {
+          return res.json(feedback);
+        })
     })
     .catch(err => {
       next(err);
     });
-});
+})
 
 module.exports = router;
