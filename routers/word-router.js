@@ -19,6 +19,24 @@ router.get('/', (req, res, next) => {
   });
 });
 
+router.get('/data', (req, res, next) => {
+  const { userId } = req.user;
+  User.findById(userId)
+    .then(result => {
+      const words = result.wordList.map(item => {
+        return {
+          word: item.word,
+          correctCount: item.correctCount,
+          incorrectCount: item.incorrectCount
+        };
+      });
+      return words
+    })
+    .then(words => {
+      return res.json(words);
+    })
+});
+
 router.post('/guess', jsonParser, (req, res, next) => {
   const { userId } = req.user;
   const { guess } = req.body;
