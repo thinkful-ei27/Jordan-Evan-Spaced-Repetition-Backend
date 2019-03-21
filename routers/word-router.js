@@ -15,7 +15,11 @@ router.get('/', (req, res, next) => {
     const words = result.wordList.map(word => {
       return { word: word, head: result.head };
     });
-    res.json({ word: result.wordList[result.head].word });
+    res.json({
+      word: result.wordList[result.head].word,
+      correctCount: result.wordList[result.head].correctCount,
+      incorrectCount: result.wordList[result.head].incorrectCount
+    });
   });
 });
 
